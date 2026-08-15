@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_mic,@drawable/ic_mic_off,@drawable/ic_headset,@drawable/ic_headset_off,@drawable/ic_call_end,@drawable/ic_dummy" />
