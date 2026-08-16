@@ -15,18 +15,19 @@ Criado com privacidade e desempenho em mente, o CallMe substitui a infraestrutur
 
 - **Latência Ultra-Baixa**: Usa **WebRTC** para criar conexões P2P diretas entre os usuários. O seu ping é fisicamente o menor possível, sem passar por servidores centrais espalhados pelo mundo. Perfeito para gamers competitivos.
 - **Criptografia Ponta-a-Ponta (E2EE)**: Toda comunicação (sinalização e áudio via fallback) é encriptada usando **AES-GCM 256 bits**. Ninguém consegue ouvir suas conversas, nem mesmo a provedora de internet.
-- **Stealth Relay (CGNAT Fallback)**: Mora no Brasil e está preso atrás de um CGNAT rígido de provedores de internet móvel? Não tem problema. O CallMe possui uma rede inteligente via MQTT que atua como relé criptografado para garantir que sua voz chegue ao destino sem comprometer a segurança.
+- **Stealth Relay (CGNAT Fallback)**: Mora no Brasil e está preso atrás de um CGNAT rígido de provedores de internet móvel? Não tem problema. O CallMe possui uma rede inteligente que atua como relé criptografado para garantir que sua voz chegue ao destino sem comprometer a segurança.
 - **Identidade Descentralizada**: Exporte e importe sua identidade e lista de servidores livremente usando arquivos `.clmbkp` encriptados nativamente.
 - **Acesso Facilitado**: Junte-se rapidamente aos servidores dos amigos escaneando **QR Codes** diretamente do aplicativo!
 - **Moderno e Fluido**: Desenvolvido em Flutter, com suporte a temas dinâmicos (Material Design 3).
 
 ---
 
-## Por que usar o CallMe em vez do Discord?
+## Por que usar o CallMe em vez de outras aplicações de chamada?
 
-O Discord é uma plataforma cliente-servidor (SFU) maravilhosa para grandes comunidades. No entanto, para **pequenos esquadrões (2 a 8 pessoas)**, o CallMe oferece duas grandes vantagens incontestáveis:
+Maioria das plataformas atualmente são (SFU) maravilhosas para grandes comunidades. No entanto, para **pequenos esquadrões (2 a 8 pessoas)**, o CallMe oferece duas grandes vantagens incontestáveis:
 1. **Privacidade Absoluta:** No CallMe, não há um "Servidor Central" ouvindo, gravando ou repassando a sua voz. A sua chave é sua.
 2. **Ping Direto:** Se você e o seu amigo moram na mesma rua, a voz de vocês viaja de um computador para o outro em `< 5ms`. No Discord, a voz precisa viajar até a capital mais próxima (Data Center da AWS/Google) e voltar.
+3. **leveza** CallMe foi projetado para multiplataforma e ainda sim causar o mínimo impacto possível em todos os cenários.
 
 ---
 
@@ -38,18 +39,18 @@ Como o CallMe não usa servidores centrais, a topologia da rede se adapta depend
 A rede opera perfeitamente. Em uma sala com 4 pessoas (Você, A, B e C), o seu dispositivo envia o seu áudio 3 vezes simultaneamente (para A, B e C) e recebe o áudio deles de volta. O uso de CPU e banda (upload/download) é irrisório e a latência é individualmente perfeita para todos.
 
 ### Em chamadas com muitos usuários (5+)
-A topologia P2P em malha total exigiria muito da sua banda e processador. Por isso, ao atingir 5 ou mais membros, a nossa engine **`TopologyManager`** entra em cena e muda a topologia instantaneamente para **Supernode SFU Dinâmico**:
+A topologia P2P em malha total exigiria muito da sua banda e processador. Por isso, ao atingir 5 ou mais membros, a engine **`TopologyManager`** entra em cena e muda a topologia instantaneamente para **Supernode SFU Dinâmico**:
 * O aplicativo analisa em tempo real o **Ping (RTT)** de todos os membros e suas plataformas (Desktop vs Celular).
 * Os membros com as conexões mais fortes e robustas são **eleitos como Supernodes**.
 * Se você estiver no celular, o seu CallMe fará upload do seu áudio **apenas 1 vez** diretamente para um Supernode. 
 * Os Supernodes conversam entre si e repassam os áudios para os seus grupos designados, atuando como verdadeiros descentralizados!
 
 ### E se a conexão P2P falhar? (Stealth Relay)
-Em redes corporativas super restritas ou CGNATs simétricos terríveis onde o WebRTC falha completamente, o aplicativo ativa o nosso **MQTT Fallback (Stealth Relay)**. Em vez de desistir da chamada, o seu áudio encriptado é redirecionado via tópicos Pub/Sub em um Broker MQTT público, garantindo conectividade máxima com O(1) de upload em qualquer situação.
+Em redes corporativas super restritas ou CGNATs simétricos terríveis onde o WebRTC falha completamente, o aplicativo ativa o **Fallback (Stealth Relay)**. Em vez de desistir da chamada, o seu áudio encriptado é redirecionado via tópicos Pub/Sub, garantindo conectividade máxima com complexidade **O(1)** de upload em qualquer situação.
 
-### O Poder do IPv6 Público
+### IPv6 Público
 Se pelo menos **um usuário na chamada** tiver conectividade IPv6 nativa e pública (cada vez mais comum em fibras óticas no Brasil e mundo afora), ocorre uma pequena mudança na rede:
-* As conexões P2P furam os temidos firewalls e CGNATs instantaneamente.
+* As conexões P2P furam os firewalls e CGNATs instantaneamente.
 * A dependência de servidores STUN/TURN cai drasticamente, pois o IPv6 permite conexões ponto-a-ponto reais e irrestritas, sem gambiarras de NAT.
 * Mesmo se os outros usuários estiverem em redes ruins de celular 4G (IPv4), o usuário com IPv6 servirá como uma âncora limpa para que as pontes de voz WebRTC se conectem a ele com a menor latência e perda de pacotes possível.
 
